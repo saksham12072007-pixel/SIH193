@@ -1,254 +1,310 @@
-KrishiSetu
 
-Smart, Satellite-Driven Agricultural Decision Support
+# KrishiSetu
 
-Smart India Hackathon 2026
-Problem Statement: 26193 — Student Innovation: Agriculture
-Theme: Agriculture, FoodTech & Rural Development
+### Smart, Satellite-Driven Agricultural Decision Support
 
-Overview
+**Smart India Hackathon 2026**  
+**Problem Statement:** 26193 — Student Innovation: Agriculture  
+**Theme:** Agriculture, FoodTech & Rural Development
 
-KrishiSetu is a satellite and AI-powered agricultural advisory platform designed to help farmers make better, plot-specific irrigation decisions.
+---
 
-The system combines Sentinel-1 SAR, Sentinel-2 optical imagery, weather data, soil information, crop stage and farmer feedback to estimate crop/soil water stress and provide a simple, actionable advisory through a mobile application and low-bandwidth channels such as SMS/IVR.
+## Overview
 
-Core Idea
+**KrishiSetu** is a satellite and AI-powered agricultural advisory platform designed to help farmers make better, plot-specific irrigation decisions.
 
-Observe → Analyse → Decide → Advise → Learn
+The system combines **Sentinel-1 SAR, Sentinel-2 optical imagery, weather data, soil information, crop stage, and farmer feedback** to estimate crop/soil water stress and provide simple, actionable advisories through a mobile application and low-bandwidth channels such as **SMS and IVR**.
 
-Instead of providing generic irrigation recommendations, KrishiSetu generates decisions for the specific plot, crop and current conditions.
+### Core Idea
 
-Problem
+> **Observe → Analyse → Decide → Advise → Learn**
+
+Instead of providing generic irrigation recommendations, KrishiSetu generates decisions based on the **specific plot, crop, and current environmental conditions**.
+
+---
+
+# Problem Statement
 
 Farmers often depend on fixed irrigation schedules or generic recommendations because:
 
-Soil moisture is not continuously available at plot level.
+- Soil moisture is not continuously available at plot level.
+- Weather and rainfall conditions change rapidly.
+- Satellite, weather, and soil data are available separately.
+- Smallholder farmers may have limited access to digital agricultural tools.
+- Existing agricultural information can be difficult to convert into a clear farm-level action.
 
-Weather and rainfall conditions change rapidly.
+### Our Approach
 
-Satellite, weather and soil data are available separately.
+KrishiSetu addresses this gap by converting multiple data sources into an **explainable, plot-level irrigation advisory**.
 
-Smallholder farmers may have limited access to digital tools.
+---
 
-Existing agricultural information can be difficult to convert into a clear farm-level action.
+# Solution
 
-KrishiSetu addresses this gap by converting multiple data sources into an explainable, plot-level irrigation advisory.
+KrishiSetu follows an end-to-end decision pipeline:
 
-Solution
-
+```text
 Farmer & Plot Registration
-          ↓
+            ↓
 Satellite + Weather + Soil + Crop Data
-          ↓
+            ↓
 Data Ingestion & Quality Control
-          ↓
+            ↓
 Feature Engineering
-          ↓
+            ↓
 Soil Moisture / Crop Stress Estimation
-          ↓
+            ↓
 Irrigation Decision Engine
-          ↓
+            ↓
 Reason + Confidence
-          ↓
+            ↓
 Farmer Advisory
-          ↓
+            ↓
 Mobile App / SMS / IVR
-          ↓
+            ↓
 Farmer Feedback
-          ↓
+            ↓
 Model Evaluation & Improvement
+````
 
-Key Features
+---
 
-1. Plot-Level Intelligence
+# Key Features
 
-GPS-based plot registration
+## 1. Plot-Level Intelligence
 
-Crop and sowing-date information
+* GPS-based plot registration
+* Crop and sowing-date information
+* Plot-specific analysis
+* Agro-climatic context
 
-Plot-specific analysis
+## 2. Satellite-Based Monitoring
 
-Agro-climatic context
+### Sentinel-1 SAR
 
-2. Satellite-Based Monitoring
+* VV/VH backscatter
+* Temporal change features
+* Useful for monitoring surface conditions under varying cloud conditions
 
-Sentinel-1 SAR: VV/VH backscatter and change features
+### Sentinel-2 Optical
 
-Sentinel-2: Red, NIR, Green, SWIR and vegetation indices
+* Red
+* NIR
+* Green
+* SWIR
+* Vegetation and water-related indices
 
-NDVI, NDWI, EVI and related features
+### Derived Indices
 
-Cloud-aware processing
+* NDVI
+* NDWI
+* EVI
+* SAVI
+* Related temporal features
 
-3. Multi-Source Data Fusion
+The processing pipeline includes cloud and quality-control handling.
 
-Rainfall
+---
 
-Temperature
+# 3. Multi-Source Data Fusion
 
-Humidity
+KrishiSetu combines multiple environmental and agricultural data sources:
 
-ET₀
+| Data Category | Inputs                                  |
+| ------------- | --------------------------------------- |
+| Satellite     | Sentinel-1, Sentinel-2                  |
+| Weather       | Rainfall, Temperature, Humidity, ET₀    |
+| Forecast      | Weather forecast                        |
+| Soil          | Soil properties, AWC                    |
+| Crop          | Crop type, growth stage, Kc             |
+| Context       | SMAP regional soil-moisture information |
+| Farmer        | Plot information and feedback           |
 
-Weather forecast
+This fusion enables more context-aware decisions than relying on a single data source.
 
-Soil properties
+---
 
-Crop growth stage
+# 4. AI/ML Decision Support
 
-SMAP regional context
+KrishiSetu uses a two-stage decision architecture.
 
-4. AI/ML Decision Support
+### Stage 1 — Water Stress Estimation
 
-Two-stage architecture:
-
-Stage 1
+```text
 EO + Weather + Soil/Crop Features
-              ↓
+                ↓
 Root-Zone Soil Moisture / CWSI
-              ↓
-Stage 2
-Moisture + Crop Stage + Rainfall + ET₀ + Soil Context
-              ↓
-No Action / Monitor / Irrigate Soon / Irrigate Now
+                ↓
+             Confidence
+```
 
-5. Explainable Advisory
+### Stage 2 — Irrigation Decision
 
-Every actionable recommendation can include:
+```text
+Soil Moisture / CWSI
+        +
+Crop Stage
+        +
+Rainfall Forecast
+        +
+ET₀
+        +
+Soil Context
+        ↓
+Irrigation Decision
+```
 
-Decision
+### Decision Classes
 
-Reason code
+```text
+No Action
+     │
+     ├── Monitor
+     │
+     ├── Irrigate Soon
+     │
+     └── Irrigate Now
+```
 
-Confidence
+---
 
-Relevant crop/plot context
+# 5. Explainable Advisory
 
-6. Farmer-Centric Delivery
+Each actionable recommendation can contain:
 
-Mobile application
+* **Decision**
+* **Reason Code**
+* **Confidence Score**
+* **Crop Context**
+* **Plot Context**
 
-SMS
+This helps farmers understand **why** an advisory was generated rather than receiving a recommendation without explanation.
 
-Optional IVR
+---
 
-Local-language advisory
+# 6. Farmer-Centric Delivery
 
-Feedback mechanism
+KrishiSetu is designed for different levels of digital connectivity.
 
-7. Institutional Dashboard
+### Delivery Channels
 
-Aggregate and geography-scoped information for authorized institutional users:
+* Mobile application
+* SMS
+* Optional IVR
+* Local-language advisories
+* Farmer feedback mechanism
 
-Crop stress
+The goal is to make agricultural intelligence accessible even in **low-connectivity environments**.
 
-Irrigation risk
+---
 
-Advisory distribution
+# 7. Institutional Dashboard
 
-Trends
+Authorized institutional users can access **aggregate and geography-scoped information** such as:
 
-Model health
+* Crop stress
+* Irrigation risk
+* Advisory distribution
+* Agricultural trends
+* Model health
 
-Technology Stack
+The dashboard is designed to support institutional monitoring without exposing individual farmer information by default.
 
-Layer
+---
 
-Technology
+# Technology Stack
 
-Mobile / Frontend
+| Layer                 | Technology                    |
+| --------------------- | ----------------------------- |
+| Mobile / Frontend     | React Native                  |
+| Web Companion         | React                         |
+| Backend               | Python, FastAPI               |
+| Database              | PostgreSQL + PostGIS          |
+| Satellite Processing  | Google Earth Engine           |
+| Machine Learning      | Python, XGBoost, scikit-learn |
+| Geospatial Processing | PostGIS, GeoPandas            |
+| Weather Data          | IMD / NASA POWER / Open-Meteo |
+| Satellite Data        | Sentinel-1, Sentinel-2, SMAP  |
+| Scheduling            | Cron / Airflow                |
+| Communication         | SMS / IVR Gateway             |
+| Dashboard             | React + Leaflet               |
 
-React Native / Web companion
+---
 
-Backend
+# System Architecture
 
-Python, FastAPI
+```text
+┌──────────────────────────────────────┐
+│          FARMER / PLOT               │
+│                                      │
+│ GPS • Crop • Soil • Sowing Date      │
+│ Consent • Plot Information           │
+└───────────────────┬──────────────────┘
+                    │
+                    ▼
+┌──────────────────────────────────────┐
+│            DATA SOURCES              │
+│                                      │
+│ Sentinel-1 • Sentinel-2              │
+│ Weather • SMAP • Soil • Crop Data    │
+└───────────────────┬──────────────────┘
+                    │
+                    ▼
+┌──────────────────────────────────────┐
+│       INGESTION & PREPROCESSING      │
+│                                      │
+│ Cloud Mask • Quality Control         │
+│ Spatial Processing • Date Alignment  │
+│ Validation                           │
+└───────────────────┬──────────────────┘
+                    │
+                    ▼
+┌──────────────────────────────────────┐
+│         FEATURE ENGINEERING          │
+│                                      │
+│ NDVI • NDWI • EVI • SAVI             │
+│ VV • VH • Rainfall • ET₀             │
+│ Kc • AWC • Crop Stage                │
+└───────────────────┬──────────────────┘
+                    │
+                    ▼
+┌──────────────────────────────────────┐
+│          ML / DECISION ENGINE        │
+│                                      │
+│ Soil Moisture • CWSI • Stress        │
+│ Decision • Confidence • Reason Code  │
+└───────────────────┬──────────────────┘
+                    │
+                    ▼
+┌──────────────────────────────────────┐
+│           ADVISORY ENGINE            │
+│                                      │
+│ Crop × Reason × Language × Context   │
+└───────────────────┬──────────────────┘
+                    │
+                    ▼
+┌──────────────────────────────────────┐
+│       FARMER DELIVERY CHANNELS       │
+│                                      │
+│ Mobile App • SMS • IVR               │
+└───────────────────┬──────────────────┘
+                    │
+                    ▼
+┌──────────────────────────────────────┐
+│       FEEDBACK & IMPROVEMENT         │
+│                                      │
+│ Farmer Feedback → Evaluation         │
+│ → Model Improvement                  │
+└──────────────────────────────────────┘
+```
 
-Database
+---
 
-PostgreSQL + PostGIS
+# Repository Structure
 
-Satellite Processing
-
-Google Earth Engine
-
-ML
-
-Python, XGBoost / scikit-learn
-
-Geospatial
-
-PostGIS, GeoPandas
-
-Weather
-
-IMD / NASA POWER / Open-Meteo
-
-Satellite
-
-Sentinel-1, Sentinel-2, SMAP
-
-Scheduling
-
-Cron / Airflow
-
-Communication
-
-SMS / IVR Gateway
-
-Dashboard
-
-React + Leaflet
-
-System Architecture
-
-┌──────────────────────┐
-│   FARMER / PLOT      │
-│ GPS • Crop • Soil    │
-│ Sowing Date • Consent│
-└──────────┬───────────┘
-           ↓
-┌─────────────────────────────────┐
-│       DATA SOURCES              │
-│ Sentinel-1 • Sentinel-2         │
-│ Weather • SMAP • Soil • Crop    │
-└──────────┬──────────────────────┘
-           ↓
-┌─────────────────────────────────┐
-│ INGESTION & PREPROCESSING        │
-│ Cloud Mask • QA • Alignment     │
-│ Spatial Processing • Validation │
-└──────────┬──────────────────────┘
-           ↓
-┌─────────────────────────────────┐
-│      FEATURE ENGINEERING        │
-│ NDVI • NDWI • EVI • VV • VH     │
-│ Rainfall • ET₀ • Kc • AWC       │
-└──────────┬──────────────────────┘
-           ↓
-┌─────────────────────────────────┐
-│       ML / DECISION ENGINE      │
-│ Soil Moisture • CWSI • Stress   │
-│ Decision • Confidence • Reason  │
-└──────────┬──────────────────────┘
-           ↓
-┌─────────────────────────────────┐
-│       ADVISORY ENGINE           │
-│ Crop × Reason × Language        │
-└──────────┬──────────────────────┘
-           ↓
-┌─────────────────────────────────┐
-│ MOBILE APP • SMS • IVR          │
-└──────────┬──────────────────────┘
-           ↓
-┌─────────────────────────────────┐
-│ FEEDBACK → EVALUATION →         │
-│ MODEL IMPROVEMENT                │
-└─────────────────────────────────┘
-
-Repository Structure
-
+```text
 KrishiSetu/
+│
 ├── app/
 │   ├── routers/
 │   ├── services/
@@ -276,23 +332,28 @@ KrishiSetu/
 ├── requirements.txt
 ├── .env.example
 └── README.md
+```
 
-Getting Started
+---
 
-Prerequisites
+# Getting Started
 
-Python 3.11+
+## Prerequisites
 
-Node.js
+Make sure the following are installed:
 
-PostgreSQL + PostGIS
+* Python 3.11+
+* Node.js
+* PostgreSQL
+* PostGIS
+* Google Earth Engine access
+* Required weather and satellite API credentials
 
-Google Earth Engine access
+---
 
-Required weather/satellite API credentials
+## Backend Setup
 
-Backend
-
+```bash
 git clone <repository-url>
 cd KrishiSetu
 
@@ -302,125 +363,151 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 uvicorn app.main:app --reload
+```
 
-Frontend
+---
 
+## Frontend Setup
+
+```bash
 cd frontend
+
 npm install
 npm run dev
+```
 
-Create your local environment file from:
+Create your local environment configuration using:
 
+```text
 .env.example
+```
 
-Never commit API keys, passwords, private keys or production credentials.
+> **Never commit API keys, passwords, private keys, or production credentials to GitHub.**
 
-Advisory Classes
+---
 
-Class
+# Advisory Classes
 
-Meaning
+| Advisory          | Meaning                                      |
+| ----------------- | -------------------------------------------- |
+| **No Action**     | Current conditions do not justify irrigation |
+| **Monitor**       | Continue monitoring the plot                 |
+| **Irrigate Soon** | Irrigation may be required shortly           |
+| **Irrigate Now**  | Immediate water-stress condition detected    |
 
-No Action
+---
 
-Current conditions do not justify irrigation
+# What Makes KrishiSetu Different?
 
-Monitor
+KrishiSetu focuses on the **complete agricultural decision pipeline**, rather than only providing satellite imagery or visualization.
 
-Continue monitoring conditions
+### Key Differentiators
 
-Irrigate Soon
+* Multi-source satellite + weather + soil + crop fusion
+* Plot-specific water-stress estimation
+* Explainable irrigation decisions
+* Confidence-aware recommendations
+* Mobile + SMS/IVR accessibility
+* Local-language advisory support
+* Farmer feedback loop
+* Model evaluation and improvement
+* Aggregate institutional intelligence
+* Decision traceability through reason codes and model information
 
-Irrigation may be required shortly
+---
 
-Irrigate Now
-
-Immediate water-stress condition detected
-
-What Makes KrishiSetu Different
-
-KrishiSetu focuses on the complete decision pipeline, not only satellite visualization:
-
-Multi-source satellite + weather + soil + crop fusion
-
-Plot-specific water-stress estimation
-
-Explainable irrigation decisions
-
-Confidence-aware recommendations
-
-Mobile + SMS/IVR accessibility
-
-Farmer feedback loop
-
-Model evaluation and continuous improvement
-
-Aggregate institutional intelligence
-
-Expected Impact
+# Expected Impact
 
 KrishiSetu aims to support:
 
-More efficient irrigation
+* More efficient irrigation
+* Reduced unnecessary water usage
+* Earlier identification of crop water stress
+* Better farm-level decision making
+* Improved accessibility for smallholder farmers
+* Data-driven agricultural monitoring for institutions
 
-Reduced unnecessary water usage
+> **Note:** Impact values will be validated through pilot and field evaluation. They should not be treated as measured results until validation is completed.
 
-Earlier identification of crop water stress
+---
 
-Better farm-level decision making
+# Project Scope
 
-Improved accessibility for smallholder farmers
+The initial architecture is designed for a **pilot deployment** and can be extended from:
 
-Data-driven agricultural monitoring for institutions
+```text
+Village
+   ↓
+Block
+   ↓
+District
+   ↓
+State
+```
 
-Impact values will be validated through pilot and field evaluation and should not be treated as measured results until validation is complete.
+The platform is designed to remain:
 
-Project Scope
+* Farmer-centric
+* Explainable
+* Scalable
+* Data-driven
+* Accessible under limited connectivity
 
-The initial project architecture is designed for a pilot deployment and can be extended from village/block-level monitoring to district and state-level agricultural intelligence.
+---
 
-The system is designed to remain farmer-centric, explainable, scalable and accessible under limited connectivity.
+# SIH 2026
 
-SIH 2026
+| Field             | Details                                   |
+| ----------------- | ----------------------------------------- |
+| Hackathon         | Smart India Hackathon 2026                |
+| Problem Statement | 26193                                     |
+| Domain            | Agriculture, FoodTech & Rural Development |
+| Project           | KrishiSetu                                |
+| Team              | std::survive                              |
 
-Hackathon: Smart India Hackathon 2026
-Problem Statement: 26193
-Domain: Agriculture, FoodTech & Rural Development
-Project: KrishiSetu
+---
 
-Team
+# Team
 
-Team Name: std::survive 
+| Member               | Role                        |
+| -------------------- | --------------------------- |
+| **Shankar Adhikary** | Backend & Architecture      |
+| **Arnendu Biswas**   | GIS & Satellite Data        |
+| **Saksham Sharma**   | AI/ML                       |
+| **Pratham Bhardwaj** | Integration & Communication |
+| **Saumya Mishra**    | Frontend & Dashboard        |
+| **Riti Patel**       | Research & Testing          |
 
-Member
+---
 
-Role
+# Future Scope
 
-Shankar Adhikary 
+The platform can be further extended with:
 
-Backend & Architecture
+* Additional crop types
+* More regional languages
+* District/state-level deployment
+* Advanced crop-stress analytics
+* Improved satellite time-series modelling
+* Expanded farmer feedback datasets
+* Field-level validation
+* Integration with additional agricultural services
 
-Arnendu Biswas 
+---
 
-GIS & Satellite Data
+# Disclaimer
 
-Saksham Sharma 
+KrishiSetu is a **decision-support system** and not a replacement for professional agronomic advice.
 
-AI/ML
+Final agronomic thresholds, model performance, irrigation recommendations, and field-level impact must be validated through appropriate **agricultural expertise, field trials, and real-world pilot data** before production deployment.
 
-Pratham Bhardwaj
+---
 
-Integration & Communication
+## Smart India Hackathon 2026
 
-Saumya Mishra
+**KrishiSetu — From Satellite Signals to Actionable Farm Decisions**
 
-Frontend & Dashboard
+> **Observe → Analyse → Decide → Advise → Learn**
 
-Riti Patel
-
-Research and testing 
-
-Disclaimer
-
-KrishiSetu is a decision-support system. Final agronomic thresholds, model performance and field-level impact must be validated with appropriate agricultural experts and real-world pilot data before production deployment.
+```
 
