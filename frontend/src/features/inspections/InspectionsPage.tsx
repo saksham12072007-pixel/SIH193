@@ -1,0 +1,19 @@
+import { FormEvent, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "../../lib/api";
+import type { FieldInspection } from "../../types";
+
+const blank = { plot_id: "", issue_type: "", observed_condition: "", severity: "MODERATE", recommended_action: "", officer_comments: "" };
+
+export function InspectionsPage() {
+  const [form, setForm] = useState(blank);
+  const [open, setOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const inspections = useQuery({ queryKey: ["inspections"], queryFn: () => api.get<FieldInspection[]>("/institutional/inspections") });
+  const create = useMutation({ mutationFn: () => api.post<FieldInspection>("/institutional/inspections", { ...form, status: "PENDING", photos: [] }), onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["inspections"] }); setForm(blank); setOpen(false); } });
+  function submit(event: FormEvent) { event.preventDefault(); create.mutate(); }
+  return <section className="page"><div className="page-heading"><div><span className="eyebrow">FIELD RESPONSE</span><h2>Inspections</h2><p>Record observations from authorized field visits.</p></div><button className="primary-button compact-button" onClick={() => setOpen(value => !value)}>+ New inspection</button></div>
+    {open && <form className="form-panel" onSubmit={submit}><div className="panel-heading"><div><span className="eyebrow">NEW RECORD</span><h3>Field inspection</h3></div></div><div className="form-grid"><label>Plot ID<input required value={form.plot_id} onChange={e => setForm({ ...form, plot_id: e.target.value })} placeholder="Paste authorized plot ID" /></label><label>Issue type<input required value={form.issue_type} onChange={e => setForm({ ...form, issue_type: e.target.value })} placeholder="e.g. irrigation stress" /></label><label>Severity<select value={form.severity} onChange={e => setForm({ ...form, severity: e.target.value })}><option>SAFE</option><option>MODERATE</option><option>HIGH</option><option>URGENT</option></select></label><label>Recommended action<input value={form.recommended_action} onChange={e => setForm({ ...form, recommended_action: e.target.value })} /></label></div><label>Observed condition<textarea required value={form.observed_condition} onChange={e => setForm({ ...form, observed_condition: e.target.value })} rows={3} /></label><label>Officer comments<textarea value={form.officer_comments} onChange={e => setForm({ ...form, officer_comments: e.target.value })} rows={2} /></label>{create.isError && <div className="form-error">Inspection could not be saved. Check the plot ID and your assigned geography.</div>}<div className="form-actions"><button type="button" className="secondary-button" onClick={() => setOpen(false)}>Cancel</button><button className="primary-button" disabled={create.isPending}>{create.isPending ? "Saving..." : "Save inspection"}</button></div></form>}
+    <div className="table-panel">{inspections.isLoading ? <div className="table-loading"><div className="spinner" /></div> : inspections.data?.length ? <div className="table-scroll"><table><thead><tr><th>Inspection</th><th>Plot / district</th><th>Officer</th><th>Severity</th><th>Status</th><th>Date</th></tr></thead><tbody>{inspections.data.map(item => <tr key={item.inspection_id}><td><strong>{item.issue_type}</strong><small>{item.observed_condition ?? "No condition recorded"}</small></td><td>{item.plot_id.slice(0, 8)}<small>{item.district ?? "Unspecified"} / {item.crop}</small></td><td>{item.officer_name}</td><td><span className={`severity ${item.severity.toLowerCase()}`}>{item.severity}</span></td><td>{item.status}</td><td>{new Date(item.inspection_date).toLocaleDateString()}</td></tr>)}</tbody></table></div> : <div className="empty-state"><strong>No inspections recorded</strong><span>Use the new inspection action to record a field visit.</span></div>}</div>
+  </section>;
+}

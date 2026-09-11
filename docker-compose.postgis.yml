@@ -1,0 +1,58 @@
+services:
+  postgis:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-crop_advisory}
+      POSTGRES_USER: ${POSTGRES_USER:-crop_advisory}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD before starting PostGIS}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - crop_advisory_postgis:/var/lib/postgresql/data
+      - ./database/postgis-init.sql:/docker-entrypoint-initdb.d/001-postgis.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-crop_advisory}:${POSTGRES_PASSWORD}@postgis:5432/${POSTGRES_DB:-crop_advisory}
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY before starting the backend}
+      FRONTEND_ALLOWED_ORIGINS: ${FRONTEND_ALLOWED_ORIGINS:-http://localhost:8080}
+      INGESTION_PROVIDER: ${INGESTION_PROVIDER:-mock}
+      SMS_PROVIDER: ${SMS_PROVIDER:-mock}
+      ML_API_ENABLED: ${ML_API_ENABLED:-false}
+    depends_on:
+      postgis:
+        condition: service_healthy
+    command: ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready')"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+
+volumes:
+  crop_advisory_postgis:

@@ -1,0 +1,74 @@
+services:
+  - type: web
+    name: crop-advisory-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    # Free-tier workaround: Render does not allow pre-deploy commands on free
+    # services, so migrations are run manually from the local machine or a
+    # one-off job before/after deployment.
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true
+      # Supabase's Postgres connection string, not a Render-provisioned DB --
+      # paste it in the Render dashboard during Blueprint setup. Use the
+      # "Session pooler" or direct connection string (port 5432/6543 with
+      # pgbouncer=true is fine either way for SQLAlchemy's persistent pool);
+      # avoid the "Transaction pooler" mode, which doesn't support prepared
+      # statements SQLAlchemy may issue. See DEPLOY.md for exactly where to
+      # find this in the Supabase dashboard.
+      - key: DATABASE_URL
+        sync: false
+      - key: SMS_PROVIDER
+        value: mock
+      - key: IVR_PROVIDER
+        value: mock
+      - key: INGESTION_PROVIDER
+        value: mock
+      - key: ENABLE_SCHEDULER
+        value: "false"
+      - key: SCHEDULER_INTERVAL_MINUTES
+        value: "60"
+      # Fill this in after the frontend service below has a Render URL, e.g.
+      # "https://crop-advisory-frontend.onrender.com" -- see deploy runbook.
+      - key: FRONTEND_ALLOWED_ORIGINS
+        sync: false
+      # Optional integrations -- leave blank (mock providers above) until
+      # real credentials are ready; set SMS_PROVIDER=twilio only once these
+      # are filled in (config.py enforces that at startup).
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_SMS_FROM
+        sync: false
+      - key: TWILIO_STATUS_CALLBACK_URL
+        sync: false
+      - key: ML_API_KEY
+        sync: false
+      - key: GEE_PROJECT_ID
+        sync: false
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        sync: false
+      - key: GEE_SERVICE_ACCOUNT
+        sync: false
+
+  - type: web
+    name: crop-advisory-frontend
+    runtime: docker
+    plan: free
+    dockerfilePath: Dockerfile
+    dockerContext: ./frontend
+    # Fill this in with the backend service's Render URL once it's deployed,
+    # e.g. "https://crop-advisory-backend.onrender.com" -- see deploy runbook.
+    # Render passes envVars as Docker build ARGs too, and the Dockerfile
+    # declares `ARG VITE_API_BASE_URL`, so this bakes into the static build.
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false

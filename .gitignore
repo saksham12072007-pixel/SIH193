@@ -1,0 +1,26 @@
+# Backend (Python)
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/.pytest_cache/
+backend/*.db
+backend/*.db-shm
+backend/*.db-wal
+backend/*.log
+backend/.env
+!backend/.env.example
+!backend/.env.postgis.example
+backend/ml_artifacts/
+backend/exports/
+
+# Frontend (Node)
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+!frontend/.env.example
+
+# Editor / OS
+.DS_Store
+Thumbs.db
