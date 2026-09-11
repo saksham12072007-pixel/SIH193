@@ -503,11 +503,6 @@ Final agronomic thresholds, model performance, irrigation recommendations, and f
 
 ---
 
-## Smart India Hackathon 2026
-
-**KrishiSetu — From Satellite Signals to Actionable Farm Decisions**
-
-> **Observe → Analyse → Decide → Advise → Learn**
 
 ```
 
